@@ -8,13 +8,14 @@
 
 (defn square [x] (* x x))
 
-(defn give-antiderivative-lazy
-  "Gives antiderivative of a function"
-  [f]
-  (let [lazy-area (map #(give-area f %) (iterate #(+ % h) 0.0))]
-    (fn [x] (reduce + (take (quot x h) lazy-area)))))
-
-(defn -main [& args]
-  (time ((give-antiderivative-lazy square) 2.0))
-  (time ((give-antiderivative-lazy square) 2.0))
+(defn num-integration-lazy
+  [f x]
+  (let [lazy-partial-sum (reductions (fn [sum num] (+ sum (give-area f num))) 0.0 (iterate #(+ % h) 0.0))]
+    (nth lazy-partial-sum (quot x h)))
   )
+
+((defn -main [& args]
+   (time (num-integration-lazy square 2.0))
+   (time (num-integration-lazy square 2.0))
+   (time (num-integration-lazy square 2.1))
+   ))
